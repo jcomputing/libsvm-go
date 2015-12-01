@@ -376,7 +376,7 @@ func svrProbability(prob *Problem, param *Parameter) float64 {
 	var newParam Parameter = *param
 	newParam.Probability = false
 
-	ymv := CrossValidation(prob, &newParam, nrFold)
+	ymv, _ := CrossValidation(prob, &newParam, nrFold)
 
 	for i := 0; i < prob.l; i++ {
 		ymv[i] = prob.y[i] - ymv[i]

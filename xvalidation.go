@@ -31,10 +31,14 @@ import (
    labels (of all prob's instances) in the validation process are
    stored in the slice called target.
 */
-func CrossValidation(prob *Problem, param *Parameter, nrFold int) (target []float64) {
+func CrossValidation(prob *Problem, param *Parameter, nrFold int) (target []float64, probabilities [][]float64) {
 	var l int = prob.l
 
 	target = make([]float64, l) // slice to return
+	if param.Probability &&
+		(param.SvmType == C_SVC || param.SvmType == NU_SVC) {
+		probabilities = make([][]float64, l) // slice to return
+	}
 
 	if nrFold > l {
 		nrFold = l
@@ -140,7 +144,7 @@ func CrossValidation(prob *Problem, param *Parameter, nrFold int) (target []floa
 			for j := begin; j < end; j++ {
 				idx := prob.x[perm[j]]
 				x := SnodeToMap(prob.xSpace[idx:])
-				target[perm[j]], _ = subModel.PredictProbability(x)
+				target[perm[j]], probabilities[perm[j]] = subModel.PredictProbability(x)
 			}
 		} else {
 			for j := begin; j < end; j++ {
