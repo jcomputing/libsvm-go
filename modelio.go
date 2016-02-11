@@ -21,6 +21,7 @@ package libSvm
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -33,6 +34,10 @@ func (model *Model) Dump(file string) error {
 	}
 
 	defer f.Close() // close f on method return
+	return model.Save(f)
+}
+
+func (model *Model) Save(w io.Writer) error {
 
 	var output []string
 
@@ -118,8 +123,7 @@ func (model *Model) Dump(file string) error {
 			output = append(output, "\n")
 		}
 	}
-
-	f.WriteString(strings.Join(output, ""))
+	w.Write([]byte(strings.Join(output, "")))
 
 	return nil
 }
@@ -282,7 +286,12 @@ func (model *Model) ReadModel(file string) error {
 
 	defer f.Close() // close f on method return
 
-	reader := bufio.NewReader(f)
+	return model.Load(f)
+}
+
+func (model *Model) Load(r io.Reader) error {
+
+	reader := bufio.NewReader(r)
 
 	if err := model.readHeader(reader); err != nil {
 		return err
